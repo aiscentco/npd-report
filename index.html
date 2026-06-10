@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NPD Diagnostic Report · AIscent Co.</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pink:  #FF2D7B; --petal: #FFE8F2; --black: #1A1A1A;
+  --bloom: #FF85B3; --white: #ffffff; --off:   #F9F6F8;
+  --line:  #EEE4EA; --muted: #9A8F95;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--off);color:var(--black);min-height:100vh;}
+h1,h2,h3{font-family:'Playfair Display',serif;}
+
+.demo-bar{background:var(--black);padding:10px 28px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:50;}
+.demo-bar label{font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:0.1em;text-transform:uppercase;}
+.demo-bar input,.demo-bar select{padding:6px 10px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:3px;color:white;font-family:'DM Sans',sans-serif;font-size:13px;}
+.demo-bar input{width:170px;}
+.demo-btn{padding:7px 16px;background:var(--pink);color:white;border:none;border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:background 0.2s;}
+.demo-btn:hover{background:#e0256d;}
+.demo-btn.dark{background:rgba(255,255,255,0.08);}
+.demo-btn.dark:hover{background:rgba(255,255,255,0.15);}
+.demo-note{font-size:11px;color:rgba(255,255,255,0.2);margin-left:auto;}
+
+.page-tabs{display:flex;background:var(--black);border-top:1px solid rgba(255,255,255,0.06);padding:0 28px;}
+.page-tab{padding:10px 18px;font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.3);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;}
+.page-tab.active{color:var(--pink);border-bottom-color:var(--pink);}
+.page-tab:hover{color:rgba(255,255,255,0.65);}
+
+.page{display:none;}
+.page.active{display:block;}
+
+.wrap{max-width:1100px;margin:0 auto;padding:32px 28px 80px;}
+
+/* HEADER */
+.report-top{margin-bottom:22px;padding-bottom:20px;border-bottom:2px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;}
+.brand-lockup{display:flex;align-items:baseline;gap:12px;margin-bottom:12px;}
+.brand-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;line-height:1;}
+.brand-logo .ai{color:var(--black);}
+.brand-logo .scent{color:var(--pink);}
+.brand-logo .co{color:var(--black);font-weight:400;font-size:13px;opacity:0.3;margin-left:2px;}
+.brand-tagline{font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--pink);border-left:2px solid var(--pink);padding-left:10px;line-height:1;}
+.rtl{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.rtm{font-family:'Playfair Display',serif;font-size:clamp(24px,3.5vw,38px);font-weight:900;line-height:1.1;color:var(--black);}
+.rtm em{font-style:italic;color:var(--pink);}
+.rtr{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.meta-date{font-size:12px;color:var(--muted);}
+.meta-sess{display:inline-flex;align-items:center;gap:5px;background:var(--petal);color:var(--pink);font-size:12px;font-weight:600;padding:5px 11px;border-radius:20px;}
+.meta-ph{font-size:11px;color:var(--muted);}
+
+.fn-legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.fn-badge{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;border:1px solid var(--line);background:white;font-size:12px;font-weight:500;}
+.fn-dot{width:7px;height:7px;border-radius:50%;}
+
+.exec-box{background:var(--pink);color:white;padding:20px 24px;border-radius:4px;margin-bottom:16px;position:relative;overflow:hidden;}
+.exec-box::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:rgba(255,255,255,0.3);}
+.exec-lbl{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.7);margin-bottom:7px;}
+.exec-txt{font-family:'Playfair Display',serif;font-size:clamp(14px,1.8vw,17px);font-style:italic;line-height:1.65;color:rgba(255,255,255,0.95);}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.scard{background:white;border:1px solid var(--line);border-radius:4px;padding:16px 18px;position:relative;overflow:hidden;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;}
+.scard:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,45,123,0.1);}
+.scard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.scard.pk::before{background:var(--pink);}
+.scard.te::before{background:#0D9488;}
+.scard.am::before{background:#F59E0B;}
+.scard.vi::before{background:#7C3AED;}
+.snum{font-family:'Playfair Display',serif;font-size:30px;font-weight:900;line-height:1;margin-bottom:4px;}
+.scard.pk .snum{color:var(--pink);}
+.scard.te .snum{color:#0D9488;}
+.scard.am .snum{color:#F59E0B;}
+.scard.vi .snum{color:#7C3AED;}
+.slbl{font-size:12px;color:var(--muted);line-height:1.4;}
+.shint{font-size:10px;color:var(--bloom);margin-top:4px;font-weight:500;}
+
+.card{background:white;border-radius:4px;border:1px solid var(--line);padding:20px 22px;}
+.clbl{font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--pink);margin-bottom:12px;}
+.ctit{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;margin-bottom:11px;color:var(--black);}
+
+/* ROW LAYOUTS */
+.row1{margin-bottom:14px;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+
+/* FRICTION MATRIX */
+.fm-wrap{overflow-x:auto;margin-top:6px;}
+.fm-table{width:100%;border-collapse:separate;border-spacing:3px;min-width:500px;}
+.fm-table th{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:4px 3px;text-align:center;color:var(--muted);white-space:nowrap;}
+.fm-corner{min-width:120px;}
+.fmrl{padding:0 8px 0 0;white-space:nowrap;}
+.fmrl-in{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:3px;font-size:11px;font-weight:600;color:white;white-space:nowrap;}
+.fmdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.5);flex-shrink:0;}
+.fmc{padding:2px;vertical-align:middle;}
+.fmci{padding:8px;border-radius:3px;text-align:center;min-width:80px;transition:transform 0.15s;cursor:default;}
+.fmci:hover{transform:scale(1.04);}
+.fm-self{background:var(--off);opacity:0.4;}
+.fm-hi{background:var(--petal);border:1px solid var(--bloom);}
+.fm-md{background:#FEF3C7;border:1px solid #FCD34D;}
+.fm-lo{background:#D1FAE5;border:1px solid #6EE7B7;}
+.fm-no{background:var(--off);border:1px solid var(--line);}
+.fml{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2px;}
+.fm-hi .fml{color:var(--pink);}
+.fm-md .fml{color:#B45309;}
+.fm-lo .fml{color:#065F46;}
+.fm-no .fml{color:var(--muted);}
+.fmtp{font-size:10px;color:var(--black);line-height:1.3;}
+.fm-no .fmtp{color:var(--muted);font-style:italic;}
+
+/* TIME BARS */
+.tbars{display:flex;gap:12px;align-items:flex-end;padding:10px 0 4px;justify-content:space-around;}
+.tbi{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;}
+.tbg{border-radius:4px;overflow:hidden;position:relative;}
+.tbf{position:absolute;bottom:0;left:0;right:0;border-radius:0 0 4px 4px;transition:height 1.2s cubic-bezier(0.34,1.56,0.64,1);}
+.tbn{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;line-height:1;}
+.tbl{font-size:11px;font-weight:600;color:var(--black);text-align:center;line-height:1.3;}
+.tbw{font-size:10px;color:var(--muted);text-align:center;}
+
+/* PAIN POINTS */
+.pain-cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px;}
+.pc{border-radius:4px;overflow:hidden;}
+.pch{padding:10px 11px 8px;display:flex;align-items:center;gap:6px;}
+.pci{width:23px;height:23px;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:11px;}
+.pcf{font-size:11px;font-weight:700;color:white;}
+.pcb{padding:9px 11px 11px;background:white;border:1px solid var(--line);border-top:none;border-radius:0 0 4px 4px;}
+.pi{font-size:12px;line-height:1.5;color:#444;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:5px;}
+.pi:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.pid{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+
+/* APPROVAL */
+.appr-flow{display:flex;align-items:stretch;gap:0;margin-top:8px;overflow-x:auto;}
+.appr-st{flex:1;min-width:95px;padding:11px 9px;background:var(--off);border:1px solid var(--line);position:relative;text-align:center;transition:all 0.2s;cursor:default;}
+.appr-st:hover{background:var(--petal);border-color:var(--bloom);}
+.appr-st:not(:last-child)::after{content:'>';position:absolute;right:-9px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--muted);z-index:2;}
+.appr-st.hi{background:var(--petal);border-color:var(--bloom);}
+.appr-st.hi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--pink);}
+.an{font-size:10px;font-weight:700;color:var(--black);margin-bottom:4px;}
+.aw{font-family:'Playfair Display',serif;font-size:16px;font-weight:900;color:var(--pink);line-height:1;margin-bottom:2px;}
+.au{font-size:9px;color:var(--muted);}
+.ar{display:inline-block;margin-top:4px;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 6px;border-radius:10px;}
+.rh{background:var(--petal);color:var(--pink);}
+.rm{background:#FEF3C7;color:#B45309;}
+.rl{background:#D1FAE5;color:#065F46;}
+
+/* BRIEF */
+.bels{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:7px;}
+.bel{padding:10px 11px;border-radius:3px;border:1px solid var(--line);}
+.beln{font-size:11px;font-weight:600;color:var(--black);margin-bottom:5px;}
+.belb{height:4px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:4px;}
+.belf{height:100%;border-radius:2px;transition:width 1.2s ease;width:0;}
+.bels2{font-size:11px;font-weight:700;}
+
+/* RECS */
+.recs{display:flex;flex-direction:column;gap:9px;margin-top:4px;}
+.rc{padding:13px 14px;border-radius:3px;border:1px solid var(--line);display:flex;gap:10px;align-items:flex-start;transition:all 0.2s;cursor:default;}
+.rc:hover{border-color:var(--bloom);background:var(--petal);}
+.rn{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--pink);opacity:0.2;line-height:1;flex-shrink:0;width:22px;}
+.rt{font-size:12px;font-weight:700;color:var(--black);margin-bottom:3px;}
+.rd{font-size:11px;line-height:1.6;color:#555;}
+.rft{display:inline-block;margin-top:5px;font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border-radius:10px;color:white;}
+.rw{display:inline-block;margin-top:3px;margin-left:4px;font-size:9px;font-weight:600;color:var(--muted);background:var(--off);padding:2px 7px;border-radius:10px;border:1px solid var(--line);}
+
+.rfooter{padding-top:22px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:14px;}
+
+/* ══ PAGE 2 ══ */
+.rm-hdr{margin-bottom:26px;padding-bottom:20px;border-bottom:2px solid var(--line);}
+.rm-ptag{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--pink);margin-bottom:7px;}
+.rm-title{font-family:'Playfair Display',serif;font-size:clamp(22px,3vw,34px);font-weight:900;line-height:1.1;color:var(--black);margin-bottom:6px;}
+.rm-title em{font-style:italic;color:var(--pink);}
+.rm-sub{font-size:14px;color:var(--muted);font-weight:300;line-height:1.7;max-width:620px;}
+
+.sk-sec{margin-bottom:26px;}
+.sk-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.sk-lbl{font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--pink);}
+.sk-note{font-size:12px;color:var(--muted);margin-top:3px;}
+.add-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;background:var(--petal);color:var(--pink);border:1.5px solid var(--bloom);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.add-btn:hover{background:var(--pink);color:white;border-color:var(--pink);}
+
+.sk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:12px;}
+.skc{background:white;border:1px solid var(--line);border-radius:4px;padding:17px;position:relative;transition:all 0.2s;}
+.skc:hover{border-color:var(--bloom);box-shadow:0 5px 18px rgba(255,45,123,0.07);}
+.skc.auto{border-top:3px solid var(--pink);}
+.skc.manual{border-top:3px solid #F59E0B;}
+.skc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
+.sk-icon{width:32px;height:32px;border-radius:3px;background:var(--petal);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.sk-rm{background:none;border:none;color:var(--line);cursor:pointer;font-size:14px;padding:2px;line-height:1;transition:color 0.2s;}
+.sk-rm:hover{color:var(--pink);}
+.sk-name{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--black);margin-bottom:5px;}
+.sk-desc{font-size:12px;line-height:1.6;color:#555;margin-bottom:9px;}
+.sk-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.sk-ft{font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 7px;border-radius:10px;color:white;}
+.sk-pt{font-size:10px;font-weight:500;color:var(--muted);background:var(--off);border:1px solid var(--line);padding:3px 7px;border-radius:10px;}
+.sk-src{font-size:9px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--bloom);margin-top:7px;}
+.fn-note{display:none;background:var(--black);color:rgba(255,255,255,0.7);padding:10px 12px;border-radius:3px;font-size:12px;line-height:1.6;margin-top:9px;}
+.fn-note.vis{display:block;}
+.fn-note-lbl{font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--pink);margin-bottom:4px;}
+
+.add-form{background:white;border:1.5px solid var(--bloom);border-radius:4px;padding:20px;margin-bottom:16px;display:none;}
+.add-form.vis{display:block;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:11px;}
+.fg label{display:block;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.fg input,.fg select,.fg textarea{width:100%;padding:9px 11px;border:1.5px solid var(--line);border-radius:3px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--black);transition:border-color 0.2s;}
+.fg textarea{resize:vertical;min-height:62px;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--pink);}
+.fg.full{grid-column:1/-1;}
+.factions{display:flex;gap:8px;margin-top:4px;}
+
+.tl-sec{margin-bottom:26px;}
+.tl-lbl{font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--pink);margin-bottom:12px;}
+.tl-wrap{background:white;border:1px solid var(--line);border-radius:4px;padding:20px;overflow-x:auto;}
+.tl-track{display:flex;align-items:center;gap:0;min-width:660px;}
+.tl-name{width:95px;flex-shrink:0;font-size:12px;font-weight:700;color:var(--black);padding-right:12px;text-align:right;}
+.tl-name span{display:block;font-size:10px;font-weight:400;color:var(--muted);margin-top:2px;}
+.tl-cells{display:flex;flex:1;gap:3px;}
+.tlc{flex:1;height:42px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;text-align:center;padding:0 3px;line-height:1.3;transition:transform 0.15s;cursor:default;}
+.tlc:hover{transform:scale(1.04);}
+.tc-e{background:var(--off);border:1px solid var(--line);color:var(--line);}
+.tc-b{background:var(--petal);border:1px solid var(--bloom);color:var(--pink);}
+.tc-bdk{background:var(--pink);color:white;}
+.tc-p{background:#FEF3C7;border:1px solid #FCD34D;color:#B45309;}
+.tc-pak{background:#F59E0B;color:white;}
+.wk-row{display:flex;flex:1;gap:3px;margin-top:5px;padding-left:95px;}
+.wklbl{flex:1;text-align:center;font-size:9px;color:var(--muted);font-weight:500;}
+
+.pulse-card{background:var(--black);color:white;border-radius:4px;padding:24px 26px;display:grid;grid-template-columns:1fr auto;gap:26px;align-items:center;margin-bottom:26px;}
+.pc-tag{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--pink);margin-bottom:7px;}
+.pc-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:900;margin-bottom:7px;line-height:1.2;}
+.pc-text{font-size:13px;line-height:1.75;color:rgba(255,255,255,0.5);font-weight:300;max-width:520px;}
+.pc-stats{display:flex;flex-direction:column;gap:9px;flex-shrink:0;}
+.pc-stat{text-align:center;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:3px;padding:11px 16px;}
+.pcs-n{font-family:'Playfair Display',serif;font-size:24px;font-weight:900;color:var(--pink);line-height:1;}
+.pcs-l{font-size:10px;color:rgba(255,255,255,0.4);margin-top:3px;}
+
+@media print{
+  .demo-bar,.page-tabs{display:none;}
+  .page{display:block!important;}
+  .page + .page{page-break-before:always;}
+  body{background:white;}
+}
+@media(max-width:768px){
+  .stats-row,.row2,.frow{grid-template-columns:1fr 1fr;}
+  .bels{grid-template-columns:1fr;}
+  .pain-cols{grid-template-columns:1fr 1fr;}
+  .report-top{grid-template-columns:1fr;}
+  .rtr{text-align:left;align-items:flex-start;}
+  .wrap{padding:18px 14px 60px;}
+  .pulse-card{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <label>Company</label>
+  <input type="text" id="demoCompany" value="Nordica Beauty Group" />
+  <label>Source</label>
+  <select id="demoSource">
+    <option value="demo">Demo data</option>
+    <option value="live">localStorage sessions</option>
+  </select>
+  <button class="demo-btn" onclick="gen()">Generate Report</button>
+  <button class="demo-btn dark" id="notesBtn" onclick="toggleNotes()">Show Founder Notes</button>
+  <button class="demo-btn dark" onclick="window.print()">Export PDF</button>
+  <span class="demo-note">AIscent Co. · Consultant View Only</span>
+</div>
+
+<div class="page-tabs">
+  <div class="page-tab active" id="tab1" onclick="swPage('p1','tab1')">01 · Diagnostic Report</div>
+  <div class="page-tab"        id="tab2" onclick="swPage('p2','tab2')">02 · Design Roadmap</div>
+</div>
+
+<div class="page active" id="p1">
+  <div class="wrap" id="rWrap">
+    <div style="text-align:center;padding:60px 0;font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:var(--muted);">Enter a company name and click Generate Report.</div>
+  </div>
+</div>
+
+<div class="page" id="p2">
+  <div class="wrap" id="rmWrap">
+    <div style="text-align:center;padding:60px 0;font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:var(--muted);">Generate the diagnostic report first.</div>
+  </div>
+</div>
+
+<script>
+const FNC = {
+  'Marketing':          {bg:'#FF2D7B',li:'#FFE8F2',icon:'✦'},
+  'R&D':                {bg:'#0D9488',li:'#CCFBF1',icon:'⚗'},
+  'Procurement':        {bg:'#F59E0B',li:'#FEF3C7',icon:'◈'},
+  'Packaging':          {bg:'#7C3AED',li:'#EDE9FE',icon:'⬡'},
+  'Regulatory':         {bg:'#3B82F6',li:'#DBEAFE',icon:'⊕'},
+  'Product Management': {bg:'#374151',li:'#F3F4F6',icon:'◎'}
+};
+
+let notesVis=false, curData=null, custSkills=[];
+
+const D = {
+  company:'Nordica Beauty Group',
+  fns:['Marketing','R&D','Procurement','Packaging','Regulatory'],
+  exec:'Nordica Beauty Group is losing an estimated 8 to 12 weeks per launch cycle to friction that concentrates at two critical points. Brief instability after kickoff creates cascading rework across R&D and Procurement. A three-stage approval sequence lacks clear decision ownership and repeatedly forces late-stage concept revisions. The team is talented. The process is what needs to change.',
+  stats:{weeks:'8 to 12',fps:4,bgs:3,sess:5},
+  ppts:{
+    'Marketing':  ['Briefs sent before consumer insight is fully validated','Concept forum requires multiple re-presentations due to trend challenges','Finance approval delays occur when cost targets were not anchored at brief stage'],
+    'R&D':        ['Briefs arrive without target cost or feasibility expectation','Scope changes mid-development cause 3 to 4 weeks of rework on average','Parallel development tracks rarely approved and everything stops at gates'],
+    'Procurement':['Cannot start sourcing without a locked cost envelope','Brief over-specification limits supplier options unnecessarily','Lead time pressure compounds when brief changes arrive late'],
+    'Packaging':  ['Packaging direction changes after external suppliers have been briefed','Design approval requires 3 to 4 rounds on average','Coordination with formula development is sequential not parallel'],
+    'Regulatory': ['Brought in too late to flag claims issues before development starts','Market-specific requirements cause late-stage rework for EU and LATAM','Claims language not pre-validated with regulatory before communication brief']
+  },
+  fps:[
+    {from:'Marketing',  to:'R&D',         lv:85,note:'Brief clarity'},
+    {from:'Marketing',  to:'Procurement',  lv:70,note:'Cost anchoring'},
+    {from:'R&D',        to:'Packaging',    lv:55,note:'Parallel timing'},
+    {from:'Marketing',  to:'Regulatory',   lv:65,note:'Claims validation'},
+    {from:'Procurement',to:'Packaging',    lv:40,note:'Supplier specs'}
+  ],
+  tl:[
+    {stage:'Brief and Kickoff', pct:25,wks:'2 to 3 wks',col:'#FF2D7B'},
+    {stage:'Development',       pct:20,wks:'1 to 2 wks',col:'#0D9488'},
+    {stage:'Approval Forums',   pct:55,wks:'4 to 6 wks',col:'#F59E0B'},
+    {stage:'Communication',     pct:35,wks:'2 to 3 wks',col:'#7C3AED'}
+  ],
+  appr:[
+    {name:'Concept Forum',    wks:'2 to 3',risk:'high',note:'Trend challenges force rework'},
+    {name:'Innovation Review',wks:'1 to 2',risk:'med', note:'Pipeline prioritisation delays'},
+    {name:'Finance Approval', wks:'2 to 4',risk:'high',note:'Cost not anchored at brief stage'},
+    {name:'Comms Approval',   wks:'1 to 3',risk:'high',note:'Claims and naming challenged late'},
+    {name:'Final Gate',       wks:'0 to 1',risk:'low', note:'Usually smooth if prior stages cleared'}
+  ],
+  be:[
+    {name:'Main Claims',           sc:55,col:'#FF2D7B'},
+    {name:'Portfolio Positioning', sc:70,col:'#0D9488'},
+    {name:'Key Ingredient',        sc:45,col:'#F59E0B'},
+    {name:'Final Look and Format', sc:60,col:'#7C3AED'},
+    {name:'Target Cost',           sc:35,col:'#3B82F6'},
+    {name:'Feasibility Scope',     sc:40,col:'#374151'}
+  ],
+  recs:[
+    {t:'Lock the brief in six',    d:'Implement a brief completeness checklist covering all six elements before any project enters development. Incomplete briefs are returned within 48 hours.',         fn:'Marketing',   fc:'#FF2D7B',wks:'Saves 2 to 3 wks'},
+    {t:'Validate claims early',    d:'Regulatory reviews claims language at concept stage before the brief is sent. One early conversation removes the risk of late-stage communication rework.',      fn:'Regulatory',  fc:'#3B82F6',wks:'Saves 1 to 2 wks'},
+    {t:'Parallel track packaging', d:'Packaging development begins in parallel with formula development. Design sign-off is not a blocker for formula approval, only for the final production gate.', fn:'Packaging',   fc:'#7C3AED',wks:'Saves 2 to 4 wks'},
+    {t:'Anchor cost at brief',     d:'Finance validates the cost envelope at brief stage before development starts. This removes the most common reason for mid-development finance rejection.',       fn:'Procurement', fc:'#F59E0B',wks:'Saves 2 to 3 wks'}
+  ]
+};
+
+function swPage(pid,tid){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.page-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(pid).classList.add('active');
+  document.getElementById(tid).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleNotes(){
+  notesVis=!notesVis;
+  document.getElementById('notesBtn').textContent=notesVis?'Hide Founder Notes':'Show Founder Notes';
+  document.querySelectorAll('.fn-note').forEach(n=>n.classList.toggle('vis',notesVis));
+}
+
+function goTo(id){
+  swPage('p1','tab1');
+  setTimeout(()=>{
+    const el=document.getElementById(id);
+    if(el){const top=el.getBoundingClientRect().top+window.scrollY-130;window.scrollTo({top,behavior:'smooth'});}
+  },100);
+}
+
+function gen(){
+  const co=document.getElementById('demoCompany').value.trim()||'Your Client';
+  let data=JSON.parse(JSON.stringify(D));
+  data.company=co;
+  if(document.getElementById('demoSource').value==='live'){
+    try{
+      const s=JSON.parse(localStorage.getItem('npd_'+co.toLowerCase().replace(/\s+/g,'_'))||'[]');
+      if(s.length>0){data.stats.sess=s.length;data.fns=[...new Set(s.map(x=>x.fn))];}
+    }catch(e){}
+  }
+  data.stats.fps=(data.fps||[]).filter(p=>p.lv>=70).length;
+  data.stats.bgs=(data.be||[]).filter(e=>e.sc<50).length;
+  curData=data; custSkills=[];
+  renderReport(data);
+  renderRoadmap(data);
+}
+
+function renderReport(d){
+  const today=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  const fns=d.fns||Object.keys(FNC).slice(0,5);
+  document.getElementById('rWrap').innerHTML=`
+  <div class="report-top">
+    <div>
+      <div class="brand-lockup">
+        <div class="brand-logo"><span class="ai">AI</span><span class="scent">scent</span><span class="co"> Co.</span></div>
+        <div class="brand-tagline">Beauty NPD Acceleration</div>
+      </div>
+      <div class="rtl">NPD Diagnostic Report</div>
+      <h1 class="rtm"><em>${d.company}</em></h1>
+    </div>
+    <div class="rtr">
+      <div class="meta-date">${today}</div>
+      <div class="meta-sess">◎ ${d.stats.sess} sessions analysed</div>
+      <div class="meta-ph">Diagnose Phase · Confidential</div>
+    </div>
+  </div>
+
+  <div class="fn-legend">
+    ${fns.map(fn=>{const c=FNC[fn]||{bg:'#999'};return`<div class="fn-badge"><div class="fn-dot" style="background:${c.bg}"></div><span>${fn}</span></div>`;}).join('')}
+  </div>
+
+  <div class="exec-box">
+    <div class="exec-lbl">Executive Summary</div>
+    <div class="exec-txt">${d.exec}</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="scard pk" onclick="goTo('s-time')">
+      <div class="snum">${d.stats.weeks}</div>
+      <div class="slbl">Weeks lost per launch cycle</div>
+      <div class="shint">See time breakdown below</div>
+    </div>
+    <div class="scard te" onclick="goTo('s-fric')">
+      <div class="snum">${d.stats.fps}</div>
+      <div class="slbl">High friction function pairs</div>
+      <div class="shint">See friction map below</div>
+    </div>
+    <div class="scard am" onclick="goTo('s-brief')">
+      <div class="snum">${d.stats.bgs}</div>
+      <div class="slbl">Critical brief elements missing</div>
+      <div class="shint">See brief quality below</div>
+    </div>
+    <div class="scard vi" onclick="goTo('s-pain')">
+      <div class="snum">${d.stats.sess}</div>
+      <div class="slbl">Team members interviewed</div>
+      <div class="shint">See pain points below</div>
+    </div>
+  </div>
+
+  <div class="card row1" id="s-fric">
+    <div class="clbl">Cross-Functional Friction Map</div>
+    ${buildMatrix(fns,d.fps)}
+  </div>
+
+  <div class="row2">
+    <div class="card" id="s-time">
+      <div class="clbl">Where Time Is Lost</div>
+      <div class="tbars">
+        ${d.tl.map(t=>`<div class="tbi">
+          <div class="tbg" style="width:46px;height:108px;background:var(--line);">
+            <div class="tbf" data-pct="${t.pct}" style="background:${t.col};height:0;"></div>
+          </div>
+          <div class="tbn" style="color:${t.col}">${t.pct}%</div>
+          <div class="tbl">${t.stage}</div>
+          <div class="tbw">${t.wks}</div>
+        </div>`).join('')}
+      </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:11px;text-align:center;font-style:italic;">Share of recoverable delay per stage</p>
+    </div>
+
+    <div class="card">
+      <div class="clbl">Approval Bottleneck Timeline</div>
+      <div class="appr-flow">
+        ${d.appr.map(s=>`<div class="appr-st ${s.risk==='high'?'hi':''}">
+          <div class="an">${s.name}</div>
+          <div class="aw">${s.wks}</div>
+          <div class="au">weeks avg.</div>
+          <div class="ar ${s.risk==='high'?'rh':s.risk==='med'?'rm':'rl'}">${s.risk.toUpperCase()} RISK</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:4px;line-height:1.4">${s.note}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div class="card row1" id="s-pain">
+    <div class="clbl">Pain Points by Function</div>
+    <div class="pain-cols">
+      ${fns.map(fn=>{
+        const c=FNC[fn]||{bg:'#999',icon:'●'};
+        const pts=(d.ppts[fn]||['No data captured yet.']).slice(0,3);
+        return`<div class="pc">
+          <div class="pch" style="background:${c.bg}">
+            <div class="pci">${c.icon}</div>
+            <div class="pcf">${fn}</div>
+          </div>
+          <div class="pcb">
+            ${pts.map(p=>`<div class="pi"><div class="pid" style="background:${c.bg}"></div><span>${p}</span></div>`).join('')}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+
+  <div class="row2">
+    <div class="card" id="s-brief">
+      <div class="clbl">Brief Quality Assessment</div>
+      <div class="ctit">How complete is the brief at kickoff?</div>
+      <div class="bels">
+        ${d.be.map(el=>{
+          const lbl=el.sc>=70?'Strong':el.sc>=50?'Partial':'Weak';
+          const clr=el.sc>=70?'#059669':el.sc>=50?'#D97706':'#FF2D7B';
+          return`<div class="bel">
+            <div class="beln">${el.name}</div>
+            <div class="belb"><div class="belf" data-w="${el.sc}" style="background:${el.col};width:0"></div></div>
+            <div class="bels2" style="color:${clr}">${lbl} · ${el.sc}%</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="card" id="s-recs">
+      <div class="clbl">Recommended Next Steps</div>
+      <div class="recs">
+        ${d.recs.map((r,i)=>`<div class="rc">
+          <div class="rn">${i+1}</div>
+          <div>
+            <div class="rt">${r.t}</div>
+            <div class="rd">${r.d}</div>
+            <span class="rft" style="background:${r.fc}">${r.fn}</span>
+            <span class="rw">${r.wks}</span>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div class="rfooter">
+    <div style="font-family:'Playfair Display',serif;font-size:13px;color:var(--muted);font-style:italic;">AIscent Co. · Beauty NPD Acceleration · Confidential</div>
+    <div style="font-size:11px;color:var(--muted);">Diagnose phase complete · Phase 2 Design available upon request</div>
+  </div>`;
+
+  requestAnimationFrame(()=>setTimeout(()=>{
+    document.querySelectorAll('.tbf[data-pct]').forEach(el=>el.style.height=el.dataset.pct+'%');
+    document.querySelectorAll('.belf[data-w]').forEach(el=>el.style.width=el.dataset.w+'%');
+  },300));
+}
+
+function buildMatrix(fns,pairs){
+  const lk={};
+  (pairs||[]).forEach(p=>{lk[p.from+'|'+p.to]=p;lk[p.to+'|'+p.from]=p;});
+  const cols=fns.slice(1);
+  const legend=`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+    <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted)"><div style="width:11px;height:11px;border-radius:2px;background:var(--petal);border:1px solid var(--bloom)"></div>High</div>
+    <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted)"><div style="width:11px;height:11px;border-radius:2px;background:#FEF3C7;border:1px solid #FCD34D"></div>Medium</div>
+    <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted)"><div style="width:11px;height:11px;border-radius:2px;background:#D1FAE5;border:1px solid #6EE7B7"></div>Low</div>
+    <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted)"><div style="width:11px;height:11px;border-radius:2px;background:var(--off);border:1px solid var(--line)"></div>No data</div>
+  </div>`;
+  let th='<thead><tr><th class="fm-corner"></th>';
+  cols.forEach(fn=>{const c=FNC[fn]||{bg:'#999'};th+=`<th style="text-align:center;padding:4px 2px"><div style="display:inline-flex;background:${c.bg};color:white;padding:3px 8px;border-radius:20px;font-size:9px;font-weight:700;letter-spacing:0.07em;white-space:nowrap">${fn}</div></th>`;});
+  th+='</tr></thead>';
+  let tb='<tbody>';
+  fns.forEach(rf=>{
+    const rc=FNC[rf]||{bg:'#999'};
+    let row=`<tr><td class="fmrl"><div class="fmrl-in" style="background:${rc.bg}"><div class="fmdot"></div>${rf}</div></td>`;
+    cols.forEach(cf=>{
+      if(rf===cf){row+=`<td class="fmc"><div class="fmci fm-self"><span style="color:var(--line)">·</span></div></td>`;return;}
+      const p=lk[rf+'|'+cf];
+      if(!p){row+=`<td class="fmc"><div class="fmci fm-no"><div class="fml">·</div><div class="fmtp">No data</div></div></td>`;return;}
+      const cls=p.lv>=70?'fm-hi':p.lv>=45?'fm-md':'fm-lo';
+      const lbl=p.lv>=70?'High':p.lv>=45?'Medium':'Low';
+      row+=`<td class="fmc"><div class="fmci ${cls}"><div class="fml">${lbl}</div><div class="fmtp">${p.note||''}</div></div></td>`;
+    });
+    row+='</tr>'; tb+=row;
+  });
+  tb+='</tbody>';
+  return legend+`<div class="fm-wrap"><table class="fm-table">${th}${tb}</table></div>`;
+}
+
+function suggestSkills(d){
+  const sk=[],fp=d.fps||[],be=d.be||[];
+  const weak=be.filter(e=>e.sc<50).map(e=>e.name);
+  if(weak.length>=2) sk.push({id:'s1',icon:'✍',src:'auto',ws:1,we:3,name:'Brief Completeness Agent',desc:'An AI that checks every brief before it is sent and flags which of the six brief elements are missing or vague. Marketing receives instant feedback before briefing R&D or Procurement.',fns:['Marketing'],pt:'Weak brief elements: '+weak.slice(0,2).join(', '),fn:'Structured AI prompt with a six-element scoring rubric. Input is the brief document. Output is a completeness score per element plus a rewrite suggestion for weak areas. Complexity: Medium. Build time: 1 to 2 weeks.'});
+  const mr=fp.find(p=>(p.from==='Marketing'&&p.to==='Regulatory')||(p.from==='Regulatory'&&p.to==='Marketing'));
+  if(mr&&mr.lv>=60) sk.push({id:'s2',icon:'⊕',src:'auto',ws:3,we:6,name:'Claims Pre-Validation Workflow',desc:'Regulatory reviews claims language at brief stage before development starts. An AI cross-references claims against regulatory requirements by market and flags risks early.',fns:['Regulatory','Marketing'],pt:'Claims validation friction',fn:'Two-step agent. Step one: extract claims from brief. Step two: cross-reference against a regulatory rules database per market. Output is a claims risk report with safe alternatives. Complexity: High. Build time: 2 to 3 weeks.'});
+  const hr=(d.appr||[]).filter(s=>s.risk==='high');
+  if(hr.length>=2) sk.push({id:'s3',icon:'◎',src:'auto',ws:2,we:5,name:'Approval Readiness Checker',desc:'Before a project enters any approval forum, this AI confirms all required inputs are present. Projects that are not ready are flagged before the meeting, not during it.',fns:['Product Management','Marketing'],pt:'Approval forum delays and rework',fn:'Checklist-driven agent that reads the project brief and stage data. Each forum type has its own checklist. Output is a readiness score and a list of missing items with owners. Complexity: Medium. Build time: 1 to 2 weeks.'});
+  const rp=fp.find(p=>(p.from==='R&D'&&p.to==='Packaging')||(p.from==='Packaging'&&p.to==='R&D'));
+  if(rp&&rp.lv>=45) sk.push({id:'s4',icon:'⬡',src:'auto',ws:1,we:4,name:'Parallel Gate Workflow',desc:'A workflow map that identifies which activities can run in parallel for each project type. Packaging and formula development stop blocking each other at gates they do not depend on.',fns:['Packaging','R&D'],pt:'Sequential development causing delays',fn:'Process mapping tool that takes a project type as input and outputs a parallel-track timeline showing which activities are truly dependent. Complexity: Low. Build time: 1 week.'});
+  const cb=be.find(e=>e.name==='Target Cost'&&e.sc<50);
+  if(cb) sk.push({id:'s5',icon:'◈',src:'auto',ws:4,we:8,name:'Cost Anchoring Agent',desc:'At brief stage, this AI validates the cost target against category benchmarks, formula complexity and volume assumptions. Finance reviews a pre-validated cost envelope rather than an aspirational number.',fns:['Procurement','Marketing'],pt:'Cost not anchored at brief stage',fn:'Connects brief data to a cost benchmark database. Flags when the cost target is unrealistic given claims and ingredient specifications. Output is a cost feasibility assessment with a suggested range. Complexity: High. Build time: 2 to 3 weeks.'});
+  return sk;
+}
+
+function renderRoadmap(d){
+  const auto=suggestSkills(d),all=[...auto,...custSkills];
+  document.getElementById('rmWrap').innerHTML=buildRM(d,all);
+}
+
+function buildRM(d,sks){
+  return`
+  <div class="rm-hdr">
+    <div class="brand-lockup">
+      <div class="brand-logo"><span class="ai">AI</span><span class="scent">scent</span><span class="co"> Co.</span></div>
+      <div class="brand-tagline">Beauty NPD Acceleration</div>
+    </div>
+    <div class="rm-ptag">Phase 2 · Design</div>
+    <h2 class="rm-title">Design Your <em>NPD Acceleration Roadmap</em></h2>
+    <p class="rm-sub">Based on what Nova found, these are the AI skills and agent workflows we will build to remove the friction. Each one addresses a specific bottleneck identified in the diagnostic. Add, remove or adjust to match this engagement.</p>
+  </div>
+
+  <div class="sk-sec">
+    <div class="sk-top">
+      <div>
+        <div class="sk-lbl">AI Skills and Agent Workflows</div>
+        <div class="sk-note">${sks.filter(s=>s.src==='auto').length} auto-suggested from diagnostic · ${custSkills.length} added manually</div>
+      </div>
+      <button class="add-btn" onclick="toggleForm()">+ Add custom skill</button>
+    </div>
+
+    <div class="add-form" id="addForm">
+      <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:13px;color:var(--black)">Add a custom skill</div>
+      <div class="frow">
+        <div class="fg"><label>Skill name</label><input type="text" id="nName" placeholder="e.g. Market Intelligence Brief Builder" /></div>
+        <div class="fg"><label>Primary function</label><select id="nFn">${Object.keys(FNC).map(fn=>`<option value="${fn}">${fn}</option>`).join('')}</select></div>
+      </div>
+      <div class="frow">
+        <div class="fg full"><label>Description</label><textarea id="nDesc" placeholder="What does this skill do and what problem does it solve?"></textarea></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>Pain point addressed</label><input type="text" id="nPain" placeholder="e.g. Trend validation at concept stage" /></div>
+        <div class="fg"><label>Founder note (internal only)</label><input type="text" id="nNote" placeholder="Complexity, tools, build time" /></div>
+      </div>
+      <div class="factions">
+        <button class="demo-btn" onclick="addSk()">Add skill</button>
+        <button class="demo-btn dark" onclick="toggleForm()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="sk-grid" id="skGrid">
+      ${sks.map(s=>skCard(s)).join('')}
+    </div>
+  </div>
+
+  <div class="tl-sec">
+    <div class="tl-lbl">12 Week Delivery Timeline</div>
+    ${buildTL(sks)}
+  </div>
+
+  <div class="pulse-card">
+    <div>
+      <div class="pc-tag">Nova Pulse · Phase 3 Preview</div>
+      <div class="pc-title">Measurement is built in from day one.</div>
+      <div class="pc-text">Every 4 to 6 weeks, Nova runs a short pulse session with the same functions. Five targeted questions focused only on the friction areas identified in this diagnostic. The output is a one-page pulse report comparing current friction levels against the Phase 1 baseline. You will know whether the work is making a difference before the engagement ends.</div>
+    </div>
+    <div class="pc-stats">
+      <div class="pc-stat"><div class="pcs-n">5</div><div class="pcs-l">questions per pulse</div></div>
+      <div class="pc-stat"><div class="pcs-n">4 wk</div><div class="pcs-l">first check-in</div></div>
+      <div class="pc-stat"><div class="pcs-n">3x</div><div class="pcs-l">pulses in 12 weeks</div></div>
+    </div>
+  </div>
+
+  <div class="rfooter">
+    <div style="font-family:'Playfair Display',serif;font-size:13px;color:var(--muted);font-style:italic;">AIscent Co. · Beauty NPD Acceleration · Confidential</div>
+    <div style="font-size:11px;color:var(--muted);">Phase 2 Design · Weeks 1 to 12</div>
+  </div>`;
+}
+
+function skCard(s){
+  const fh=(s.fns||[]).map(fn=>{const c=FNC[fn]||{bg:'#999'};return`<span class="sk-ft" style="background:${c.bg}">${fn}</span>`;}).join('');
+  return`<div class="skc ${s.src}" id="sk-${s.id}">
+    <div class="skc-top"><div class="sk-icon">${s.icon||'◎'}</div><button class="sk-rm" onclick="rmSk('${s.id}')">✕</button></div>
+    <div class="sk-name">${s.name}</div>
+    <div class="sk-desc">${s.desc}</div>
+    <div class="sk-tags">${fh}<span class="sk-pt">${s.pt||''}</span></div>
+    <div class="sk-src">${s.src==='auto'?'Auto-suggested from diagnostic':'Added manually'}</div>
+    <div class="fn-note${notesVis?' vis':''}" id="fn-${s.id}">
+      <div class="fn-note-lbl">Founder Note · Internal Only</div>${s.fn||'No founder note added yet.'}
+    </div>
+  </div>`;
+}
+
+function buildTL(sks){
+  const n=12;
+  const bc=Array.from({length:n},(_,i)=>{
+    const w=i+1,sk=sks.find(s=>w>=(s.ws||1)&&w<=(s.we||3));
+    if(sk){const a=sk.name.split(' ').slice(0,2).join(' ');return`<div class="tlc tc-bdk" title="${sk.name}">${a}</div>`;}
+    return`<div class="tlc tc-b" style="opacity:0.25">·</div>`;
+  }).join('');
+  const pc=Array.from({length:n},(_,i)=>{
+    const w=i+1;
+    if([4,8,12].includes(w))return`<div class="tlc tc-pak" title="Nova Pulse Check-in">Nova Pulse</div>`;
+    return`<div class="tlc tc-p" style="opacity:0.25">·</div>`;
+  }).join('');
+  const wl=Array.from({length:n},(_,i)=>`<div class="wklbl">W${i+1}</div>`).join('');
+  return`<div class="tl-wrap">
+    <div class="tl-track"><div class="tl-name">Build <span>AI Skills</span></div><div class="tl-cells">${bc}</div></div>
+    <div class="tl-track" style="margin-top:5px"><div class="tl-name">Pulse <span>Nova Check-in</span></div><div class="tl-cells">${pc}</div></div>
+    <div class="wk-row">${wl}</div>
+  </div>`;
+}
+
+function toggleForm(){document.getElementById('addForm').classList.toggle('vis');}
+
+function addSk(){
+  const name=document.getElementById('nName').value.trim();
+  const desc=document.getElementById('nDesc').value.trim();
+  if(!name||!desc){alert('Please enter a name and description.');return;}
+  custSkills.push({id:'c'+Date.now(),icon:'✦',src:'manual',ws:6,we:10,name,desc,fns:[document.getElementById('nFn').value],pt:document.getElementById('nPain').value.trim(),fn:document.getElementById('nNote').value.trim()});
+  toggleForm();
+  renderRoadmap(curData);
+}
+
+function rmSk(id){
+  const el=document.getElementById('sk-'+id);
+  if(el){el.style.opacity='0';el.style.transition='opacity 0.3s';setTimeout(()=>el.remove(),300);}
+  custSkills=custSkills.filter(s=>s.id!==id);
+}
+
+window.addEventListener('load',gen);
+</script>
+</body>
+</html>
