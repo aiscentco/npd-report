@@ -195,6 +195,11 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
 .fn-note{display:none;background:var(--black);color:rgba(255,255,255,0.7);padding:10px 12px;border-radius:3px;font-size:12px;line-height:1.6;margin-top:9px;}
 .fn-note.vis{display:block;}
 .fn-note-lbl{font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--pink);margin-bottom:4px;}
+.build-btn{display:none;align-items:center;gap:6px;margin-top:10px;padding:9px 16px;background:var(--pink);color:white;border:none;border-radius:20px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;letter-spacing:0.02em;width:100%;justify-content:center;}
+.build-btn.vis{display:inline-flex;}
+.build-btn:hover{background:#e0256d;transform:translateY(-1px);box-shadow:0 4px 14px rgba(255,45,123,0.3);}
+.build-btn:active{transform:translateY(0);}
+.build-btn svg{width:13px;height:13px;fill:white;flex-shrink:0;}
 
 .add-form{background:white;border:1.5px solid var(--bloom);border-radius:4px;padding:20px;margin-bottom:16px;display:none;}
 .add-form.vis{display:block;}
@@ -354,6 +359,7 @@ function toggleNotes(){
   notesVis=!notesVis;
   document.getElementById('notesBtn').textContent=notesVis?'Hide Founder Notes':'Show Founder Notes';
   document.querySelectorAll('.fn-note').forEach(n=>n.classList.toggle('vis',notesVis));
+  document.querySelectorAll('.build-btn').forEach(b=>b.classList.toggle('vis',notesVis));
 }
 
 function goTo(id){
@@ -651,6 +657,36 @@ function buildRM(d,sks){
   </div>`;
 }
 
+function buildPrompt(s){
+  return `I want to build an AI tool for my NPD consultancy AIscent Co.
+
+Name: ${s.name}
+Type: AI agent / workflow
+Departments: ${(s.fns||[]).join(', ')}
+Pain point: ${s.pt||'Not specified'}
+Architecture and context: ${s.fn||'Not specified'}
+Expected output: ${s.desc}
+
+Help me:
+1. Define the system prompt
+2. Define the input format
+3. Define the output schema
+4. Give me a step-by-step build plan`;
+}
+
+async function handleBuildThis(id){
+  // Find the skill in current data
+  const allSkills = [...suggestSkills(curData), ...custSkills];
+  const s = allSkills.find(x => x.id === id);
+  if(!s) return;
+  const prompt = buildPrompt(s);
+  // Copy to clipboard as fallback
+  try { await navigator.clipboard.writeText(prompt); } catch(e) {}
+  // Open claude.ai with pre-filled prompt
+  const encoded = encodeURIComponent(prompt);
+  window.open(`https://claude.ai/new?q=${encoded}`, '_blank');
+}
+
 function skCard(s){
   const fh=(s.fns||[]).map(fn=>{const c=FNC[fn]||{bg:'#999'};return`<span class="sk-ft" style="background:${c.bg}">${fn}</span>`;}).join('');
   return`<div class="skc ${s.src}" id="sk-${s.id}">
@@ -662,6 +698,10 @@ function skCard(s){
     <div class="fn-note${notesVis?' vis':''}" id="fn-${s.id}">
       <div class="fn-note-lbl">Founder Note · Internal Only</div>${s.fn||'No founder note added yet.'}
     </div>
+    <button class="build-btn${notesVis?' vis':''}" onclick="handleBuildThis('${s.id}')">
+      Build This Agent
+      <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
   </div>`;
 }
 
