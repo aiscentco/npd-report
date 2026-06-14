@@ -1,22 +1,36 @@
-Nova Report Dashboard · NPD Diagnostic Output
-AIscent Co. · Beauty NPD Acceleration
+# Nova Report Dashboard · NPD Diagnostic Output
+### AIscent Co. · Beauty NPD Acceleration
+
 The Nova Report Dashboard is the consultant-facing output of the AIscent Co. NPD diagnostic process. It synthesizes session data collected by Nova into a two-page visual report for use in client presentations and debriefs.
-What this tool does
+
+## What this tool does
+
 The dashboard generates a fully visual diagnostic report from Nova session data. It is organized into two pages accessible via tabs at the top of the screen.
-Page 1 · Diagnostic Report includes an executive summary, four key stat cards, a cross-functional friction matrix, a time lost breakdown, pain points by function, an approval bottleneck timeline, a brief quality assessment and prioritized recommendations.
-Page 2 · Design Roadmap includes auto-suggested AI skill cards based on diagnostic findings, a manually editable skill library, a 12-week delivery timeline showing the Build and Pulse tracks, and a Nova Pulse preview card introducing Phase 3.
-How to use it
-Open the tool in a browser (Chrome or Safari recommended)
-Enter the client company name in the consultant bar at the top
-Select Demo data to preview with sample data, or localStorage sessions to load real Nova session data
-Click Generate Report
-Use the Show Founder Notes button to reveal internal technical notes on each skill card
-Use Export PDF to print or save the report for client sharing
-Pages
-01 · Diagnostic Report — the client-facing diagnostic output
-02 · Design Roadmap — the Phase 2 consulting plan with AI skill cards and timeline
-Important
+
+**Page 1 · Diagnostic Report** includes an executive summary, four key stat cards, a cross-functional friction matrix, a time lost breakdown, pain points by function, an approval bottleneck timeline, a brief quality assessment and prioritized recommendations.
+
+**Page 2 · Design Roadmap** includes auto-suggested AI skill cards based on diagnostic findings, a manually editable skill library, a 12-week delivery timeline showing the Build and Pulse tracks, and a Nova Pulse preview card introducing Phase 3.
+
+## How to use it
+
+1. Open the tool in a browser (Chrome or Safari recommended)
+2. Enter the client company name in the consultant bar at the top
+3. Select Demo data to preview with sample data, or localStorage sessions to load real Nova session data
+4. Click Generate Report
+5. Use the Show Founder Notes button to reveal internal technical notes on each skill card
+6. Use Export PDF to print or save the report for client sharing
+
+## Pages
+
+**01 · Diagnostic Report** — the client-facing diagnostic output
+**02 · Design Roadmap** — the Phase 2 consulting plan with AI skill cards and timeline
+
+## Important
+
 This dashboard is for AIscent Co. consultant use only. It is not shared directly with client respondents. The report is generated from session data collected by the Nova diagnostic tool and stored locally in the browser.
+
 When sharing with a client, present the dashboard live in a browser during the debrief meeting. Export to PDF for board-level distribution.
+
 ---
-AIscent Co. · xo@aiscent.co · lydia@aiscent.co · aiscent.co
+
+**AIscent Co.** · xo@aiscent.co · lydia@aiscent.co · aiscent.co
