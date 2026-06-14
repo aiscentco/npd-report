@@ -262,7 +262,7 @@ h1,h2,h3{font-family:'Playfair Display',serif;}
   <label>Source</label>
   <select id="demoSource">
     <option value="demo">Demo data</option>
-    <option value="live">localStorage sessions</option>
+    <option value="live">Google Sheets / local</option>
   </select>
   <button class="demo-btn" onclick="gen()">Generate Report</button>
   <button class="demo-btn dark" id="notesBtn" onclick="toggleNotes()">Show Founder Notes</button>
@@ -370,15 +370,43 @@ function goTo(id){
   },100);
 }
 
-function gen(){
+// ══════════════════════════════════════════════
+// DATA LAYER — same as Nova. The only place storage
+// logic lives. To migrate to Supabase, rewrite ONLY
+// getSessions. Nothing else in the report changes.
+// Paste the SAME Google Apps Script URL you used in Nova.
+// Leave empty to read from local browser storage.
+// ══════════════════════════════════════════════
+const STORAGE_URL = '';
+
+function getSessions(company){
+  if(!STORAGE_URL){
+    try{ return Promise.resolve(JSON.parse(localStorage.getItem('npd_'+company.toLowerCase().replace(/\s+/g,'_'))||'[]')); }
+    catch(e){ return Promise.resolve([]); }
+  }
+  return new Promise(resolve=>{
+    const cb='rptCb_'+Date.now();
+    const script=document.createElement('script');
+    let done=false;
+    window[cb]=(res)=>{done=true;delete window[cb];if(script.parentNode)script.parentNode.removeChild(script);resolve((res&&res.sessions)?res.sessions:[]);};
+    script.onerror=()=>{if(!done){delete window[cb];resolve([]);}};
+    script.src=STORAGE_URL+'?company='+encodeURIComponent(company)+'&callback='+cb;
+    document.body.appendChild(script);
+    setTimeout(()=>{if(!done){delete window[cb];resolve([]);}},8000);
+  });
+}
+
+async function gen(){
   const co=document.getElementById('demoCompany').value.trim()||'Your Client';
   let data=JSON.parse(JSON.stringify(D));
   data.company=co;
   if(document.getElementById('demoSource').value==='live'){
-    try{
-      const s=JSON.parse(localStorage.getItem('npd_'+co.toLowerCase().replace(/\s+/g,'_'))||'[]');
-      if(s.length>0){data.stats.sess=s.length;data.fns=[...new Set(s.map(x=>x.fn))];}
-    }catch(e){}
+    const s=await getSessions(co);
+    if(s.length>0){
+      data.stats.sess=s.length;
+      data.fns=[...new Set(s.map(x=>x.fn))];
+      data._liveSessions=s;
+    }
   }
   data.stats.fps=(data.fps||[]).filter(p=>p.lv>=70).length;
   data.stats.bgs=(data.be||[]).filter(e=>e.sc<50).length;
